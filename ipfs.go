@@ -2,6 +2,8 @@ package ipar
 
 import (
 	"context"
+	"log/slog"
+	"sync"
 
 	"github.com/chigopher/pathlib"
 	"github.com/ipfs/boxo/files"
@@ -32,9 +34,29 @@ func (i *IpfsAdder) Add(ctx context.Context, p *pathlib.Path, pinName string) (*
 		return nil, err
 	}
 
+	eventCh := make(chan any)
+	wg := &sync.WaitGroup{}
+	wg.Go(func() {
+		for {
+			e, done := <-eventCh
+			if !done {
+				break
+			}
+			if evt, ok := e.(*coreiface.AddEvent); !ok {
+				slog.Warn("failed to case core api event to AddEvent", "event", evt)
+				continue
+			} else {
+				slog.Debug("added path", "name", evt.Name, "path", evt.Path.RootCid().String(), "size", evt.Size)
+			}
+		}
+	})
+
 	path, err := i.coreAPI.Unixfs().Add(
 		ctx,
 		n,
+		coreoptions.Unixfs.Events(eventCh),
+		coreoptions.Unixfs.PreserveMtime(false),
+		coreoptions.Unixfs.PreserveMode(false),
 		coreoptions.Unixfs.Pin(true, pinName),
 		coreoptions.Unixfs.Progress(true),
 		coreoptions.Unixfs.FsCache(true),
@@ -44,6 +66,8 @@ func (i *IpfsAdder) Add(ctx context.Context, p *pathlib.Path, pinName string) (*
 	if err != nil {
 		return nil, err
 	}
+	close(eventCh)
+	wg.Wait()
 	return &path, nil
 }
 

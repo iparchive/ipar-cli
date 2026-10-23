@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 	"os"
 
@@ -87,10 +88,14 @@ var addCmd = &cobra.Command{
 			}
 			cidArchivalLink := config.ArchivalDir.Join(path.RootCid().String())
 			if err := cidArchivalLink.Symlink(p); err != nil {
-				printAndDie(err)
+				if errors.Is(err, os.ErrExist) {
+					slog.Debug("symlink of cid to path already exists")
+				} else {
+					printAndDie(err)
+				}
 			}
-
-			slog.Debug("added path", "dir", pathArchivalLink.String(), "cid", path.RootCid().String())
+			slog.Debug("symlinked cid to path", "cid", path.RootCid().String(), "path", pathArchivalLink.String())
+			slog.Info("added path to ipar", "path", pathArchivalLink.String(), "cid", path.RootCid().String())
 		}
 	},
 }
