@@ -31,6 +31,7 @@ func init() {
 
 	rootCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "v", false, "enable verbose output")
 	rootCmd.AddCommand(iaCmd)
+	rootCmd.AddCommand(hfCmd)
 	rootCmd.AddCommand(addCmd)
 }
 

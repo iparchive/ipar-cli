@@ -46,7 +46,7 @@
 
 ## Internet Archive Integration (archive.org)
 
-### `ipar ia item `<url>`
+### `ipar ia add <url>`
 
 1. The `ia item` command:
 1.1. Verifies that the URL is valid (any 200 & non-404 response).
@@ -68,3 +68,7 @@
     --nocopy \
     --recursive \
     --wrap-with-directory "$@"` (for directories)
+
+## Huggingface Integration (huggingface.co)
+
+### `ipar hf add <modelID>`

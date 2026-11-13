@@ -1,2 +1,2 @@
 # ipar-cli
-Command-line interface for managing your voluntary content archive.
+Command-line interface for managing your InterPlanetary Archive.

@@ -46,15 +46,13 @@ type InternetArchiveItem struct {
 		SHA1  string
 		Size  string
 	} `json:"files"`
-	FileCnt     uint                        `json:"files_count"`
-	ItemSize    uint64                      `json:"item_size"`
-	LastUpdated uint64                      `json:"item_last_updated"`
-	Metadata    InternetArchiveItemMetadata `json:"metadata"`
-	Server      string                      `json:"server"`
-}
-
-type InternetArchiveItemMetadata struct {
-	Identifier InternetArchiveItemIdentifier `json:"identifier"`
+	FileCnt     uint   `json:"files_count"`
+	ItemSize    uint64 `json:"item_size"`
+	LastUpdated uint64 `json:"item_last_updated"`
+	Metadata    struct {
+		Identifier InternetArchiveItemIdentifier `json:"identifier"`
+	} `json:"metadata"`
+	Server string `json:"server"`
 }
 
 type InternetArchiveRepositoryHttpAPI struct{}
